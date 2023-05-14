@@ -1,0 +1,25 @@
+name: 'AWS CloudFromation Deploy'
+description: Github action to deploy a Stack to the AWS CloudFormation
+inputs:
+  template-file:
+    description: 'path to cloud formation template file'
+    required: true
+  stack-name:
+    description: 'name of the stack to be deployed'
+    required: true
+  parameters-json:
+    description: 'parameters to the cloud formation templates'
+    required: false
+    default: ''
+  capability-iam:
+    description: 'boolean parameter to say whether CAPABILITY_IAM is required'
+    required: false
+    default: 'false'
+  capability-named-iam:
+    description: 'boolean parameter to say whether CAPABILITY_NAMED_IAM is required'
+    required: false
+    default: 'false'
+    
+runs:
+  using: node16
+  main: index.js
