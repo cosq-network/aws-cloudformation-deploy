@@ -21,11 +21,11 @@ if (parameterOverrides) {
 }
 
 const capabilities = [];
-if (capabilityIAM === 'true') {
+if ((capabilityIAM === 'true') || (capabilityIAM === true)) {
     capabilities.push('CAPABILITY_IAM');
 }
 
-if (capabilityNamedIAM === 'true') {
+if ((capabilityNamedIAM === 'true') || (capabilityNamedIAM === true)) {
     capabilities.push('CAPABILITY_NAMED_IAM');
 }
 
