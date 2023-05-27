@@ -36,7 +36,8 @@ if (capabilities.length) {
 
 const process = execFile('aws', arguments, (error, stdout, stderr) => {
     if (error) {
-        core.setFailed(`error while trying to deploy ${stackName}`);
+        core.info(arguments.join(','));
+        core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
         return;
     }
     core.info(`created/updated ${stackName} stack`);
