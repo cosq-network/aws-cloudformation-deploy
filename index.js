@@ -14,6 +14,7 @@ arguments.push('--stack-name');
 arguments.push(stackName);
 if (parameterOverrides) {
     const params = JSON.parse(parameterOverrides);
+    arguments.push('--parameter-overrides');
     for (const paramName in params) {
         const param = `${paramName}=${params[paramName]}`;
         arguments.push(param);
