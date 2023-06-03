@@ -15,54 +15,55 @@ const templateFileContent = fs.readFileSync(templateFile);
 core.info(templateFileContent);
 const templateObject = YAML.parse(templateFileContent);
 core.info(templateObject);
-if (!!templateObject['Parameters']) {
-    const githubEnv = process.env['GITHUB_ENV'];
-    if (!!githubEnv) {
-        core.info(githubEnv);
-        const githubEnvObject = YAML.parse(githubEnv);
-        core.info(githubEnvObject);
-        if (!!githubEnvObject['env']) {
-            core.info(githubEnvObject['env']);
-        }
-    }
-    for (const parameterName in templateObject['Parameters']) {
-        core.info(`parameter found: $(parameterName)`);
-    }
-}
 
-const arguments = ['cloudformation', 'deploy'];
-arguments.push('--template-file');
-arguments.push(templateFile);
-arguments.push('--stack-name');
-arguments.push(stackName);
-if (parameterOverrides) {
-    const params = JSON.parse(parameterOverrides);
-    arguments.push('--parameter-overrides');
-    for (const paramName in params) {
-        const param = `${paramName}=${params[paramName]}`;
-        arguments.push(param);
-    }
-}
+// if (!!templateObject['Parameters']) {
+//     const githubEnv = process.env['GITHUB_ENV'];
+//     if (!!githubEnv) {
+//         core.info(githubEnv);
+//         const githubEnvObject = YAML.parse(githubEnv);
+//         core.info(githubEnvObject);
+//         if (!!githubEnvObject['env']) {
+//             core.info(githubEnvObject['env']);
+//         }
+//     }
+//     for (const parameterName in templateObject['Parameters']) {
+//         core.info(`parameter found: $(parameterName)`);
+//     }
+// }
 
-const capabilities = [];
-if ((capabilityIAM === 'true') || (capabilityIAM === true)) {
-    capabilities.push('CAPABILITY_IAM');
-}
+// const arguments = ['cloudformation', 'deploy'];
+// arguments.push('--template-file');
+// arguments.push(templateFile);
+// arguments.push('--stack-name');
+// arguments.push(stackName);
+// if (parameterOverrides) {
+//     const params = JSON.parse(parameterOverrides);
+//     arguments.push('--parameter-overrides');
+//     for (const paramName in params) {
+//         const param = `${paramName}=${params[paramName]}`;
+//         arguments.push(param);
+//     }
+// }
 
-if ((capabilityNamedIAM === 'true') || (capabilityNamedIAM === true)) {
-    capabilities.push('CAPABILITY_NAMED_IAM');
-}
+// const capabilities = [];
+// if ((capabilityIAM === 'true') || (capabilityIAM === true)) {
+//     capabilities.push('CAPABILITY_IAM');
+// }
 
-if (capabilities.length) {
-    arguments.push('--capabilities');
-    arguments.push(...capabilities);
-}
+// if ((capabilityNamedIAM === 'true') || (capabilityNamedIAM === true)) {
+//     capabilities.push('CAPABILITY_NAMED_IAM');
+// }
 
-execFile('aws', arguments, (error, stdout, stderr) => {
-    if (error) {
-        core.info(arguments.join(','));
-        core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
-        return;
-    }
-    core.info(`created/updated ${stackName} stack`);
-});
+// if (capabilities.length) {
+//     arguments.push('--capabilities');
+//     arguments.push(...capabilities);
+// }
+
+// execFile('aws', arguments, (error, stdout, stderr) => {
+//     if (error) {
+//         core.info(arguments.join(','));
+//         core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
+//         return;
+//     }
+//     core.info(`created/updated ${stackName} stack`);
+// });
