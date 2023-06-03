@@ -21,6 +21,9 @@ if (!!templateObject['Parameters']) {
         core.info(githubEnv);
         const githubEnvObject = YAML.parse(githubEnv);
         core.info(githubEnvObject);
+        if (!!githubEnvObject['env']) {
+            core.info(githubEnvObject['env']);
+        }
     }
     for (const parameterName in templateObject['Parameters']) {
         core.info(`parameter found: $(parameterName)`);
@@ -55,7 +58,7 @@ if (capabilities.length) {
     arguments.push(...capabilities);
 }
 
-const process = execFile('aws', arguments, (error, stdout, stderr) => {
+execFile('aws', arguments, (error, stdout, stderr) => {
     if (error) {
         core.info(arguments.join(','));
         core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
