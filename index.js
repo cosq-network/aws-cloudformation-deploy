@@ -28,8 +28,8 @@ if (templateObject['Parameters']) {
             core.warning(`Evironment varibale expected for the parameter ${parameterName}`);
             continue;
         }
-        const param = `${paramName}=${params[paramName]}`;
-        arguments.push(param);            
+        const param = `${parameterName}=${process.env[parameterName]}`;
+        arguments.push(param);
     }
 }
 
