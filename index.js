@@ -4,6 +4,7 @@ const { stdout, stderr } = require('node:process');
 const YAML = require('yaml');
 const fs = require('fs');
 const process = require('node:process');
+const { yamlParse } = require('yaml-cfn');
 
 const templateFile = core.getInput('template-file', { required: true });
 const stackName = core.getInput('stack-name', { required: true });
@@ -13,7 +14,7 @@ const capabilityNamedIAM = core.getInput('capability-named-iam', { required: fal
 
 const templateFileContent = fs.readFileSync(templateFile);
 core.info(templateFileContent);
-const templateObject = YAML.parse(templateFileContent);
+const templateObject = yamlParse(templateFileContent);
 core.info(templateObject);
 
 // if (!!templateObject['Parameters']) {
