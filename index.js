@@ -68,9 +68,10 @@ if (capabilities.length) {
 
 execFile('aws', arguments, (error, stdout, stderr) => {
     if (error) {
-        core.debug (`aws ${arguments.join(' ')}`);
+        if (stderr) core.error(stderr);
+        if (stdout) core.debug(stdout);
         core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
         return;
     }
-    core.info(`created/updated ${stackName} stack`);
+    core.info(stdout);
 });
