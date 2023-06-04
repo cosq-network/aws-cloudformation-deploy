@@ -13,24 +13,22 @@ const capabilityIAM = core.getInput('capability-iam', { required: false });
 const capabilityNamedIAM = core.getInput('capability-named-iam', { required: false });
 
 const templateFileContent = fs.readFileSync(templateFile);
-core.info(templateFileContent);
 const templateObject = yamlParse(templateFileContent);
-core.info(templateObject);
 
-// if (!!templateObject['Parameters']) {
-//     const githubEnv = process.env['GITHUB_ENV'];
-//     if (!!githubEnv) {
-//         core.info(githubEnv);
-//         const githubEnvObject = YAML.parse(githubEnv);
-//         core.info(githubEnvObject);
-//         if (!!githubEnvObject['env']) {
-//             core.info(githubEnvObject['env']);
-//         }
-//     }
-//     for (const parameterName in templateObject['Parameters']) {
-//         core.info(`parameter found: $(parameterName)`);
-//     }
-// }
+if (!!templateObject['Parameters']) {
+    const githubEnv = process.env['GITHUB_ENV'];
+    if (!!githubEnv) {
+        core.info(githubEnv);
+        const githubEnvObject = YAML.parse(githubEnv);
+        core.info(githubEnvObject);
+        if (!!githubEnvObject['env']) {
+            core.info(githubEnvObject['env']);
+        }
+    }
+    for (const parameterName in templateObject['Parameters']) {
+        core.info(`parameter found: $(parameterName)`);
+    }
+}
 
 // const arguments = ['cloudformation', 'deploy'];
 // arguments.push('--template-file');
