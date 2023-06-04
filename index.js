@@ -15,7 +15,7 @@ const capabilityNamedIAM = core.getInput('capability-named-iam', { required: fal
 const templateFileContent = fs.readFileSync(templateFile);
 const templateObject = yamlParse(templateFileContent);
 
-if (!!templateObject['Parameters']) {
+if (templateObject['Parameters']) {
     const githubEnv = process.env['GITHUB_ENV'];
     if (!!githubEnv) {
         core.info(githubEnv);
@@ -26,7 +26,7 @@ if (!!templateObject['Parameters']) {
         }
     }
     for (const parameterName in templateObject['Parameters']) {
-        core.info(`parameter found: $(parameterName)`);
+        core.info(`parameter found: ${parameterName})`);
     }
 }
 
