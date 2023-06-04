@@ -15553,7 +15553,7 @@ const forceUpload = core.getInput('force-upload', { required: false });
 const s3Prefix = core.getInput('s3-prefix', { required: false });
 const kmsKeyId = core.getInput('kms-key-id', { required: false });
 
-const arguments = ['cloudformation', 'deploy'];
+let arguments = ['cloudformation', 'deploy'];
 arguments.push('--template-file');
 arguments.push(templateFile);
 arguments.push('--stack-name');
