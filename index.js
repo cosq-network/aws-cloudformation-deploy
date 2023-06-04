@@ -12,57 +12,42 @@ const parameterOverrides = core.getInput('parameters-json', { required: false })
 const capabilityIAM = core.getInput('capability-iam', { required: false });
 const capabilityNamedIAM = core.getInput('capability-named-iam', { required: false });
 
+const arguments = ['cloudformation', 'deploy'];
+arguments.push('--template-file');
+arguments.push(templateFile);
+arguments.push('--stack-name');
+arguments.push(stackName);
+
 const templateFileContent = fs.readFileSync(templateFile);
 const templateObject = yamlParse(templateFileContent);
 
 if (templateObject['Parameters']) {
-    core.info(process.env);
-    for (const variableName in process.env) {
-        console.log(`env ${variableName}`);
-    }
-
-    const githubEnv = process.env['GITHUB_ENV'];
-    if (!!githubEnv) {
-        core.info(githubEnv);
-        const githubEnvObject = YAML.parse(githubEnv);
-        core.info(githubEnvObject);
-        if (!!githubEnvObject['env']) {
-            core.info(githubEnvObject['env']);
-        }
-    }
+    arguments.push('--parameter-overrides');
     for (const parameterName in templateObject['Parameters']) {
-        core.info(`parameter found: ${parameterName}`);
+        if (!process.env[parameterName]) {
+            core.warning(`Evironment varibale expected for the parameter ${parameterName}`);
+            continue;
+        }
+        const param = `${paramName}=${params[paramName]}`;
+        arguments.push(param);            
     }
 }
 
-// const arguments = ['cloudformation', 'deploy'];
-// arguments.push('--template-file');
-// arguments.push(templateFile);
-// arguments.push('--stack-name');
-// arguments.push(stackName);
-// if (parameterOverrides) {
-//     const params = JSON.parse(parameterOverrides);
-//     arguments.push('--parameter-overrides');
-//     for (const paramName in params) {
-//         const param = `${paramName}=${params[paramName]}`;
-//         arguments.push(param);
-//     }
-// }
+const capabilities = [];
+if ((capabilityIAM === 'true') || (capabilityIAM === true)) {
+    capabilities.push('CAPABILITY_IAM');
+}
 
-// const capabilities = [];
-// if ((capabilityIAM === 'true') || (capabilityIAM === true)) {
-//     capabilities.push('CAPABILITY_IAM');
-// }
+if ((capabilityNamedIAM === 'true') || (capabilityNamedIAM === true)) {
+    capabilities.push('CAPABILITY_NAMED_IAM');
+}
 
-// if ((capabilityNamedIAM === 'true') || (capabilityNamedIAM === true)) {
-//     capabilities.push('CAPABILITY_NAMED_IAM');
-// }
+if (capabilities.length) {
+    arguments.push('--capabilities');
+    arguments.push(...capabilities);
+}
 
-// if (capabilities.length) {
-//     arguments.push('--capabilities');
-//     arguments.push(...capabilities);
-// }
-
+core.info(arguments);
 // execFile('aws', arguments, (error, stdout, stderr) => {
 //     if (error) {
 //         core.info(arguments.join(','));
