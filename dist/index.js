@@ -15618,9 +15618,7 @@ const fetchEvents = function (arguments, parentError) {
 
 execFile('aws', arguments, (error, stdout, stderr) => {
     if (error) {
-        // if (stderr) core.error(stderr);
-        // if (stdout && !stderr) core.debug(stdout);
-        core.info(`aws cloudformation deply: ${stdout}`);
+        core.info(`aws cloudformation deply: ${stderr}`);
         arguments = ['cloudformation', 'describe-stack-events', '--stack-name', stackName, '--output', 'json'];
         fetchEvents(arguments, error);
     } else {
