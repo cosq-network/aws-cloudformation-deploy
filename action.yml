@@ -7,10 +7,6 @@ inputs:
   stack-name:
     description: 'name of the stack to be deployed'
     required: true
-  parameters-json:
-    description: 'parameters to the cloud formation templates'
-    required: false
-    default: ''
   capability-iam:
     description: 'boolean parameter to say whether CAPABILITY_IAM is required'
     required: false
@@ -19,6 +15,22 @@ inputs:
     description: 'boolean parameter to say whether CAPABILITY_NAMED_IAM is required'
     required: false
     default: 'false'
+  s3-bucket:
+    description:  'The name of the S3 bucket where this command uploads your CloudFormation template. This is required the deployments of templates sized greater than 51,200 bytes'
+    required: false
+    default: ''
+  force-upload:
+    description: 'Indicates whether to override existing files in the S3 bucket. Specify this flag to upload artifacts even if they match existing artifacts in the S3 bucket'
+    required: false
+    default: 'false'
+  s3-prefix:
+    description: 'Indicates whether to override existing files in the S3 bucket. Specify this flag to upload artifacts even if they match existing artifacts in the S3 bucket'
+    required: false
+    default: ''
+  kms-key-id:
+    description: 'The ID of an AWS KMS key that the command uses to encrypt artifacts that are at rest in the S3 bucket'
+    required: false
+    default: ''
     
 runs:
   using: node16

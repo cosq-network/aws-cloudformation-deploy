@@ -8,15 +8,34 @@ const { yamlParse } = require('yaml-cfn');
 
 const templateFile = core.getInput('template-file', { required: true });
 const stackName = core.getInput('stack-name', { required: true });
-const parameterOverrides = core.getInput('parameters-json', { required: false });
 const capabilityIAM = core.getInput('capability-iam', { required: false });
 const capabilityNamedIAM = core.getInput('capability-named-iam', { required: false });
+const s3Bucket = core.getInput('s3-bucket', { required: false });
+const forceUpload = core.getInput('force-upload', { required: false });
+const s3Prefix = core.getInput('s3-prefix', { required: false });
+const kmsKeyId = core.getInput('kms-key-id', { required: false });
 
 const arguments = ['cloudformation', 'deploy'];
 arguments.push('--template-file');
 arguments.push(templateFile);
 arguments.push('--stack-name');
 arguments.push(stackName);
+if (s3Bucket) {
+    arguments.push('--s3-bucket');
+    arguments.push(s3Bucket);
+}
+if ((forceUpload) && ('true' === forceUpload)) {
+    arguments.push('--force-upload');
+}
+if (s3Prefix) {
+    arguments.push('--s3-prefix');
+    arguments.push(s3Prefix);
+}
+if (kmsKeyId) {
+    arguments.push('--kms-key-id');
+    arguments.push(kmsKeyId);
+}
+
 
 const templateFileContent = fs.readFileSync(templateFile);
 const templateObject = yamlParse(templateFileContent);
@@ -47,12 +66,11 @@ if (capabilities.length) {
     arguments.push(...capabilities);
 }
 
-core.info(arguments);
-// execFile('aws', arguments, (error, stdout, stderr) => {
-//     if (error) {
-//         core.info(arguments.join(','));
-//         core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
-//         return;
-//     }
-//     core.info(`created/updated ${stackName} stack`);
-// });
+execFile('aws', arguments, (error, stdout, stderr) => {
+    if (error) {
+        core.debug (`aws ${arguments.join(' ')}`);
+        core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
+        return;
+    }
+    core.info(`created/updated ${stackName} stack`);
+});
