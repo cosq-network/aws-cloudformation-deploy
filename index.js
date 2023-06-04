@@ -5,6 +5,7 @@ const YAML = require('yaml');
 const fs = require('fs');
 const process = require('node:process');
 const { yamlParse } = require('yaml-cfn');
+const { error } = require('node:console');
 
 const templateFile = core.getInput('template-file', { required: true });
 const stackName = core.getInput('stack-name', { required: true });
@@ -36,7 +37,6 @@ if (kmsKeyId) {
     arguments.push(kmsKeyId);
 }
 
-
 const templateFileContent = fs.readFileSync(templateFile);
 const templateObject = yamlParse(templateFileContent);
 
@@ -66,12 +66,26 @@ if (capabilities.length) {
     arguments.push(...capabilities);
 }
 
+const fetchEvents = function (arguments, parentError) {
+    execFile('aws', arguments, (error, stdout, stderr) => {
+        if (stderr) core.error(stderr);
+        if (stdout && !stderr) core.debug(stdout);
+        if (error) {
+            core.setFailed(`An error occured while trying to get the events of stack ${stackName} update/create`);
+        } else {
+            core.debug(stdout);
+            core.setFailed(`error while trying to deploy ${stackName} with error ${parentError}`);
+        }
+    });
+}
+
 execFile('aws', arguments, (error, stdout, stderr) => {
     if (error) {
         if (stderr) core.error(stderr);
-        if (stdout) core.debug(stdout);
-        core.setFailed(`error while trying to deploy ${stackName} with error ${error}`);
-        return;
+        if (stdout && !stderr) core.debug(stdout);
+        arguments = ['cloudformation', 'describe-stack-events', '--stack-name', stackName, '--output', 'json'];
+        fetchEvents(arguments, error);
+    } else {
+        core.info(stdout);
     }
-    core.info(stdout);
 });
