@@ -4,7 +4,7 @@
   "description": "Github action to deploy a Stack to the AWS CloudFormation",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist/index.js && node_modules/.bin/ncc build --out dist --minify"
+    "build": "rm -rf dist/index.js && node_modules/.bin/ncc build --out dist"
   },
   "repository": {
     "type": "git",
