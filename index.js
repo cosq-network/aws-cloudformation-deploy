@@ -17,6 +17,10 @@ const templateObject = yamlParse(templateFileContent);
 
 if (templateObject['Parameters']) {
     core.info(process.env);
+    for (const variableName in process.env) {
+        console.log(`env ${variableName}`);
+    }
+
     const githubEnv = process.env['GITHUB_ENV'];
     if (!!githubEnv) {
         core.info(githubEnv);
