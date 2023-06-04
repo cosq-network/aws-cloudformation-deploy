@@ -73,7 +73,7 @@ const fetchEvents = function (arguments, parentError) {
         if (error) {
             core.setFailed(`An error occured while trying to get the events of stack ${stackName} update/create`);
         } else {
-            core.debug(`aws cloudformation describe-stack-events: ${stdout}`);
+            core.info(`aws cloudformation describe-stack-events: ${stdout}`);
             core.setFailed(`error while trying to deploy ${stackName} with error ${parentError}`);
         }
     });
@@ -83,7 +83,7 @@ execFile('aws', arguments, (error, stdout, stderr) => {
     if (error) {
         // if (stderr) core.error(stderr);
         // if (stdout && !stderr) core.debug(stdout);
-        core.debug(`aws cloudformation deply: ${stdout}`);
+        core.info(`aws cloudformation deply: ${stdout}`);
         arguments = ['cloudformation', 'describe-stack-events', '--stack-name', stackName, '--output', 'json'];
         fetchEvents(arguments, error);
     } else {
