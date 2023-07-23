@@ -1,37 +1,26 @@
-name: 'AWS CloudFromation Deploy'
-description: Github action to deploy a Stack to the AWS CloudFormation
+name: 'CloudFormation Deploy'
+description: 'Create or update a CloudFormation stack using the AWS CLI'
 inputs:
-  template-file:
-    description: 'path to cloud formation template file'
+  stackName:
+    description: 'Name of the stack to be passed to the --stack-name argument of the AWS CLI'
     required: true
-  stack-name:
-    description: 'name of the stack to be deployed'
+  templateFile:
+    description: 'Path to the template file to be passed to the --template-file argument of the AWS CLI'
     required: true
-  capability-iam:
-    description: 'boolean parameter to say whether CAPABILITY_IAM is required'
+  parameterFile:
+    description: 'Path to JSON parameter file to be pre-processed and passed to --parameter-overrides of the AWS CLI'
+    required: true
+  hasIAMCapability:
+    description: 'Determines whether to pass CAPABILITY_IAM as a capability'
     required: false
-    default: 'false'
-  capability-named-iam:
-    description: 'boolean parameter to say whether CAPABILITY_NAMED_IAM is required'
+    default: false
+  hasIAMNamedCapability:
+    description: 'Determines whether to pass CAPABILITY_NAMED_IAM as a capability'
     required: false
-    default: 'false'
-  s3-bucket:
-    description:  'The name of the S3 bucket where this command uploads your CloudFormation template. This is required the deployments of templates sized greater than 51,200 bytes'
-    required: false
-    default: ''
-  force-upload:
-    description: 'Indicates whether to override existing files in the S3 bucket. Specify this flag to upload artifacts even if they match existing artifacts in the S3 bucket'
-    required: false
-    default: 'false'
-  s3-prefix:
-    description: 'Indicates whether to override existing files in the S3 bucket. Specify this flag to upload artifacts even if they match existing artifacts in the S3 bucket'
-    required: false
-    default: ''
-  kms-key-id:
-    description: 'The ID of an AWS KMS key that the command uses to encrypt artifacts that are at rest in the S3 bucket'
-    required: false
-    default: ''
-    
+    default: false
+outputs:
+  stackOutputs:
+    description: 'Stack outputs returned by the AWS CloudFormation describe-stacks command'
 runs:
-  using: node16
-  main: dist/index.js
+  using: 'node12'
+  main: 'dist/action.js'
