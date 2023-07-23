@@ -4,16 +4,16 @@
   "description": "GitHub Action to create or update a CloudFormation stack using AWS CLI",
   "main": "dist/action.js",
   "scripts": {
-    "compile": "node_modules/.bin/babel index.js --out-file dist/action.js"
+    "build": "ncc build index.js --minify --out dist"
   },
   "author": "Benoy Bose <benoybose@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.4"
+    "@actions/core": "^1.2.4",
+    "@vercel/ncc": "^0.36.1",
+    "yaml-cfn": "^0.3.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.15.0",
-    "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.6"
+    "@vercel/ncc": "^0.36.1"
   }
 }

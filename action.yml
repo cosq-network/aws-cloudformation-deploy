@@ -7,9 +7,6 @@ inputs:
   templateFile:
     description: 'Path to the template file to be passed to the --template-file argument of the AWS CLI'
     required: true
-  parameterFile:
-    description: 'Path to JSON parameter file to be pre-processed and passed to --parameter-overrides of the AWS CLI'
-    required: true
   hasIAMCapability:
     description: 'Determines whether to pass CAPABILITY_IAM as a capability'
     required: false
@@ -23,4 +20,4 @@ outputs:
     description: 'Stack outputs returned by the AWS CloudFormation describe-stacks command'
 runs:
   using: 'node12'
-  main: 'dist/action.js'
+  main: 'dist/index.js'

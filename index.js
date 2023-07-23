@@ -1,31 +1,43 @@
 const core = require('@actions/core');
 const child_process = require('child_process');
 const fs = require('fs');
+const yaml = require('yaml-cfn');
 
 async function run() {
   try {
     const stackName = core.getInput('stackName');
     const templateFile = core.getInput('templateFile');
-    const parameterFile = core.getInput('parameterFile');
     const hasIAMCapability = core.getInput('hasIAMCapability');
     const hasIAMNamedCapability = core.getInput('hasIAMNamedCapability');
 
-    // Pre-process parameterFile to replace $(VAR) with environment variables
-    let parameterOverrides = fs.readFileSync(parameterFile, 'utf8');
-    const parameterRegex = /\$\((.*?)\)/g;
-    const matches = parameterOverrides.match(parameterRegex);
+    // Parse the CloudFormation template file to get all parameters
+    const templateContent = fs.readFileSync(templateFile, 'utf8');
+    const cfnTemplate = yaml.yamlParse(templateContent);
+    const parameters = cfnTemplate.Parameters;
 
-    if (matches) {
-      for (const match of matches) {
-        const envVariable = match.slice(2, -1);
-        const envValue = process.env[envVariable] || '';
-        parameterOverrides = parameterOverrides.replace(match, envValue);
-        console.log(`Replaced ${envVariable} with ${envValue}`);
+    // Prepare the parameter overrides string
+    let parameterOverrides = '';
+
+    for (const parameterKey in parameters) {
+      if (Object.prototype.hasOwnProperty.call(parameters, parameterKey)) {
+        const parameterEnvVariable = process.env[parameterKey];
+
+        if (parameterEnvVariable !== undefined) {
+          // If an environment variable with the same name exists, add it to parameterOverrides
+          parameterOverrides += `${parameterKey}=${parameterEnvVariable} `;
+        } else {
+          core.warning(`Environment variable '${parameterKey}' not found. Parameter will not be overridden.`);
+        }
       }
     }
 
     // Run AWS CLI command to create or update the stack
-    const deployArgs = ['cloudformation', 'deploy', '--stack-name', stackName, '--template-file', templateFile, '--parameter-overrides', parameterOverrides];
+    const deployArgs = [
+      'cloudformation', 'deploy',
+      '--stack-name', stackName,
+      '--template-file', templateFile,
+      '--parameter-overrides', parameterOverrides.trim()
+    ];
 
     if (hasIAMCapability) {
       deployArgs.push('--capabilities', 'CAPABILITY_IAM');
@@ -47,7 +59,6 @@ async function run() {
         const outputKey = output.OutputKey;
         const outputValue = output.OutputValue;
         core.exportVariable(outputKey, outputValue);
-        console.log(`set output ${outputKey} and ${outputValue}`);
       }
     }
 
