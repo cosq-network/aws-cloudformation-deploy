@@ -59,6 +59,7 @@ async function run() {
         const outputKey = output.OutputKey;
         const outputValue = output.OutputValue;
         core.exportVariable(outputKey, outputValue);
+        core.info(`outputs[${outputKey}] = ${outputValue}`);
       }
     }
 
