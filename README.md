@@ -24,7 +24,7 @@ Before using the "Deploy AWS CloudFormation Stack" GitHub Action, ensure that yo
 
 ```yaml
 - name: Configure AWS Credentials
-  uses: aws-actions/configure-aws-credentials@v1
+  uses: aws-actions/configure-aws-credentials@v1.0.3
   with:
     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
