@@ -24,7 +24,7 @@ async function run() {
 
         if (parameterEnvVariable !== undefined) {
           // If an environment variable with the same name exists, add it to parameterOverrides
-          parameterOverrides += `"${parameterKey}=${parameterEnvVariable}" `;
+          parameterOverrides += `${parameterKey}="${parameterEnvVariable}" `;
         } else {
           core.warning(`Environment variable '${parameterKey}' not found. Parameter will not be overridden.`);
         }

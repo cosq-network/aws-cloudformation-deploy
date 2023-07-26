@@ -65,7 +65,7 @@ jobs:
           aws-region: us-east-1 # Modify this to your desired AWS region
 
       - name: Deploy AWS CloudFormation Stack
-        uses: cosq-network/aws-cloudformation-deploy@v1.0.4
+        uses: cosq-network/aws-cloudformation-deploy@v1.0.5
         env:
           stackName: 'your-stack-name'
           templateFile: 'path/to/your/template-file.yaml'
