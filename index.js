@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const child_process = require('child_process');
 const fs = require('fs');
+const path = require('path');
 const yaml = require('yaml-cfn');
 
 async function run() {
@@ -15,28 +16,28 @@ async function run() {
     const cfnTemplate = yaml.yamlParse(templateContent);
     const parameters = cfnTemplate.Parameters;
 
-    // Prepare the parameter overrides string
-    let parameterOverrides = '';
-
+    let parameterOverrides = {};
     for (const parameterKey in parameters) {
       if (Object.prototype.hasOwnProperty.call(parameters, parameterKey)) {
         const parameterEnvVariable = process.env[parameterKey];
-
         if (parameterEnvVariable !== undefined) {
-          // If an environment variable with the same name exists, add it to parameterOverrides
-          parameterOverrides += `${parameterKey}="${parameterEnvVariable}" `;
+          parameterOverrides[parameterKey] = parameterEnvVariable;
         } else {
           core.warning(`Environment variable '${parameterKey}' not found. Parameter will not be overridden.`);
         }
       }
     }
 
+    const filePath = path.join(process.env.GITHUB_WORKSPACE, 'params.json');
+    const jsonString = JSON.stringify(parameterOverrides, null, 2);
+    fs.writeFileSync(filePath, jsonString);
+
     // Run AWS CLI command to create or update the stack
     const deployArgs = [
       'cloudformation', 'deploy',
       '--stack-name', stackName,
       '--template-file', templateFile,
-      '--parameter-overrides', parameterOverrides.trim()
+      '--parameter-overrides', `file://${filePath}`
     ];
 
     if (hasIAMCapability) {
