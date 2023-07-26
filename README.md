@@ -58,14 +58,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.0.2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1 # Modify this to your desired AWS region
 
       - name: Deploy AWS CloudFormation Stack
-        uses: cosq-network/aws-cloudformation-deploy@v1.0.0
+        uses: cosq-network/aws-cloudformation-deploy@v1.0.4
         env:
           stackName: 'your-stack-name'
           templateFile: 'path/to/your/template-file.yaml'
