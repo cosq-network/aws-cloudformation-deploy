@@ -16,12 +16,15 @@ async function run() {
     const cfnTemplate = yaml.yamlParse(templateContent);
     const parameters = cfnTemplate.Parameters;
 
-    let parameterOverrides = {};
+    let parameterOverrides = [];
     for (const parameterKey in parameters) {
       if (Object.prototype.hasOwnProperty.call(parameters, parameterKey)) {
         const parameterEnvVariable = process.env[parameterKey];
         if (parameterEnvVariable !== undefined) {
-          parameterOverrides[parameterKey] = parameterEnvVariable;
+          parameterOverrides.push({
+            "ParameterKey": parameterKey,
+            "ParameterValue": parameterEnvVariable
+          });
         } else {
           core.warning(`Environment variable '${parameterKey}' not found. Parameter will not be overridden.`);
         }
