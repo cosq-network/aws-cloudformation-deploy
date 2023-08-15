@@ -16,7 +16,6 @@ async function run() {
       if (parameterJSON) parameterJSONObject = JSON.parse(parameterJSON);
     } catch (e) {
       core.warning(`Error while parsing parameter JSON. ${e}`);
-      core.warning(`${parameterJSON}`);
     }
     
 
@@ -35,7 +34,6 @@ async function run() {
             "ParameterKey": parameterKey,
             "ParameterValue": parameterValue
           });
-          core.info(`${parameterKey}: ${parameterValue}`);
         } else {
           core.warning(`Environment variable '${parameterKey}' not found. Parameter will not be overridden.`);
         }
@@ -67,10 +65,6 @@ async function run() {
     try {
       child_process.execFileSync('aws', deployArgs, { stdio: 'inherit' });
     } catch (e) {
-      core.warning(`parameterJSON: ${parameterJSON}`);
-      core.warning(`parameters: ${parameters}`);
-      core.warning(`parameterOverrides: ${parameterOverrides}`);
-      core.warning(`deploy args: ${deployArgs}`);
       core.error('Error while executing command');
       core.setFailed(e.message);
     }
