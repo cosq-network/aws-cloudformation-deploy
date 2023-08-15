@@ -16,6 +16,7 @@ async function run() {
       if (parameterJSON) parameterJSONObject = JSON.parse(parameterJSON);
     } catch (e) {
       core.warning(`Error while parsing parameter JSON. ${e}`);
+      core.warning(`${parameterJSON}`);
     }
     
 
