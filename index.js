@@ -65,7 +65,16 @@ async function run() {
       deployArgs.push('--capabilities', 'CAPABILITY_NAMED_IAM');
     }
 
-    child_process.execFileSync('aws', deployArgs, { stdio: 'inherit' });
+    try {
+      child_process.execFileSync('aws', deployArgs, { stdio: 'inherit' });
+    } catch (e) {
+      core.warning(`parameterJSON: ${parameterJSONObject}`);
+      core.warning(`parameters: ${parameters}`);
+      core.warning(`deploy args: ${deployArgs}`);
+      core.error('Error while executing command');
+      core.setFailed(e.message);
+    }
+    
 
     // Get the stack outputs using AWS CLI and set them as environment variables
     const describeStacksArgs = ['cloudformation', 'describe-stacks', '--stack-name', stackName];
