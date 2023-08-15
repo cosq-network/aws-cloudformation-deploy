@@ -10,6 +10,14 @@ async function run() {
     const templateFile = core.getInput('templateFile');
     const hasIAMCapability = core.getInput('hasIAMCapability');
     const hasIAMNamedCapability = core.getInput('hasIAMNamedCapability');
+    const parameterJSON = core.getInput('parameterJSON');
+    let parameterJSONObject = null;
+    try {
+      if (parameterJSON) parameterJSONObject = JSON.parse(parameterJSON);
+    } catch (e) {
+      core.warning(`Error while parsing parameter JSON. ${e}`);
+    }
+    
 
     // Parse the CloudFormation template file to get all parameters
     const templateContent = fs.readFileSync(templateFile, 'utf8');
@@ -19,12 +27,14 @@ async function run() {
     let parameterOverrides = [];
     for (const parameterKey in parameters) {
       if (Object.prototype.hasOwnProperty.call(parameters, parameterKey)) {
-        const parameterEnvVariable = process.env[parameterKey];
-        if (parameterEnvVariable !== undefined) {
+        let parameterValue = parameterJSONObject[parameterKey];
+        if (parameterValue === undefined) parameterValue = process.env[parameterKey];
+        if (parameterValue !== undefined) {
           parameterOverrides.push({
             "ParameterKey": parameterKey,
-            "ParameterValue": parameterEnvVariable
+            "ParameterValue": parameterValue
           });
+          core.info(`${parameterKey}: ${parameterValue}`);
         } else {
           core.warning(`Environment variable '${parameterKey}' not found. Parameter will not be overridden.`);
         }
@@ -40,14 +50,17 @@ async function run() {
       'cloudformation', 'deploy',
       '--stack-name', stackName,
       '--template-file', templateFile,
-      '--parameter-overrides', `file://${filePath}`
     ];
 
-    if (hasIAMCapability) {
+    if ((parameters) && (parameters.length)) {
+      deployArgs.push('--parameter-overrides', `file://${filePath}`);
+    }
+
+    if ((hasIAMCapability === 'true') || (hasIAMCapability === true)) {
       deployArgs.push('--capabilities', 'CAPABILITY_IAM');
     }
 
-    if (hasIAMNamedCapability) {
+    if ((hasIAMNamedCapability === 'true') || (hasIAMNamedCapability === true)) {
       deployArgs.push('--capabilities', 'CAPABILITY_NAMED_IAM');
     }
 

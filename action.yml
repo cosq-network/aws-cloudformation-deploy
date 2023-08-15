@@ -15,6 +15,10 @@ inputs:
     description: 'Determines whether to pass CAPABILITY_NAMED_IAM as a capability'
     required: false
     default: false
+  parameterJSON:
+    description: 'JSON Object contains parameter key value pair'
+    required: false
+    default: '{}'
 outputs:
   stackOutputs:
     description: 'Stack outputs returned by the AWS CloudFormation describe-stacks command'
