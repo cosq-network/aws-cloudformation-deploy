@@ -42,10 +42,6 @@ async function run() {
       }
     }
 
-    const filePath = path.join(process.env.GITHUB_WORKSPACE, 'params.json');
-    const jsonString = JSON.stringify(parameterOverrides, null, 2);
-    fs.writeFileSync(filePath, jsonString);
-
     // Run AWS CLI command to create or update the stack
     const deployArgs = [
       'cloudformation', 'deploy',
@@ -53,7 +49,10 @@ async function run() {
       '--template-file', templateFile,
     ];
 
-    if ((parameters) && (parameters.length)) {
+    if ((parameterOverrides) && (parameterOverrides.length)) {
+      const filePath = path.join(process.env.GITHUB_WORKSPACE, 'params.json');
+      const jsonString = JSON.stringify(parameterOverrides, null, 2);
+      fs.writeFileSync(filePath, jsonString);
       deployArgs.push('--parameter-overrides', `file://${filePath}`);
     }
 
@@ -68,8 +67,9 @@ async function run() {
     try {
       child_process.execFileSync('aws', deployArgs, { stdio: 'inherit' });
     } catch (e) {
-      core.warning(`parameterJSON: ${parameterJSONObject}`);
+      core.warning(`parameterJSON: ${parameterJSON}`);
       core.warning(`parameters: ${parameters}`);
+      core.warning(`parameterOverrides: ${parameterOverrides}`);
       core.warning(`deploy args: ${deployArgs}`);
       core.error('Error while executing command');
       core.setFailed(e.message);
