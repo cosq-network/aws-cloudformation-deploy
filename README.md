@@ -1,90 +1,130 @@
-# Deploy AWS CloudFormation Stack GitHub Action
+# AWS CloudFormation Deployment GitHub Action
 
-## Overview
+## Description
 
-The "Deploy AWS CloudFormation Stack" GitHub Action allows you to create or update an AWS CloudFormation stack using the AWS CLI. It takes input parameters, such as the stack name and template file, from environment variables to perform the deployment. After a successful deployment, the action retrieves the stack outputs and sets them as environment variables in the GitHub workflow.
+The AWS CloudFormation Deployment GitHub Action simplifies the process of deploying AWS CloudFormation templates. It automates the deployment process, enabling users to easily deploy infrastructure as code using GitHub Actions.
 
-This GitHub Action is useful for automating the process of deploying AWS CloudFormation stacks as part of your continuous integration (CI) and continuous deployment (CD) workflows.
+## Features
 
-## Action Inputs
+- Seamless deployment of AWS CloudFormation templates.
+- Supports versioned releases for continuous integration and deployment.
+- Flexible configuration options to tailor the deployment process to your needs.
 
-The following environment variables are required to use the "Deploy AWS CloudFormation Stack" GitHub Action:
+## Getting Started
 
-1. `stackName`: The name of the AWS CloudFormation stack to create or update.
+Follow these steps to integrate and use the AWS CloudFormation Deployment GitHub Action in your project:
 
-2. `templateFile`: The path to the AWS CloudFormation template file (YAML or JSON format) to be used for the stack deployment.
+1. **Repository Setup:**
 
-3. `hasIAMCapability`: A flag to determine whether to pass `CAPABILITY_IAM` as a capability when deploying the stack. Set this variable to `"true"` if your stack requires IAM capability, or leave it unset otherwise.
+   Make sure you have an AWS account and the necessary credentials set up to deploy CloudFormation templates.
 
-4. `hasIAMNamedCapability`: A flag to determine whether to pass `CAPABILITY_NAMED_IAM` as a capability when deploying the stack. Set this variable to `"true"` if your stack requires named IAM capability, or leave it unset otherwise.
+2. **Action Configuration:**
 
-## Prerequisites
+   Create a workflow file (e.g., `.github/workflows/aws-cfn-deploy.yml`) in your repository to define the GitHub Actions workflow. Below is an example workflow configuration:
 
-Before using the "Deploy AWS CloudFormation Stack" GitHub Action, ensure that you have configured AWS CLI credentials to interact with your AWS account. To set up AWS CLI credentials in your GitHub Actions workflow, you can use the `aws-actions/configure-aws-credentials` (or similar) task. Here's an example of how to set up AWS CLI credentials before using the action:
+   ```yaml
+   name: AWS CloudFormation Deployment
+
+   on:
+     push:
+       branches:
+         - main
+
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+
+       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v2
+
+         - name: Deploy AWS CloudFormation template
+           uses: cosq-network/aws-cloudformation-deploy@v1.1.0
+           with:
+             stackName: MyCloudFormationStack
+             templateFile: path/to/your/template.yaml
+             hasIAMCapability: true
+             hasIAMNamedCapability: true
+             parameterJSON: '{"Key1": "Value1", "Key2": "Value2"}'
+   ```
+
+   Customize the configuration according to your project's needs, such as specifying the stack name, template file path, capabilities, and input parameters using the provided options.
+
+3. **Push to Main Branch:**
+
+   Push your changes to the main branch, which will trigger the GitHub Actions workflow to deploy the CloudFormation template.
+
+## Usage
+
+1. Commit your CloudFormation template (e.g., `template.yaml`) to your repository.
+
+2. Push your changes to the main branch.
+
+3. GitHub Actions will automatically trigger the deployment workflow on every push to the main branch.
+
+## Configuration Options
+
+- `stackName`:
+  - Name of the stack to be passed to the `--stack-name` argument of the AWS CLI.
+  - Required: true
+
+- `templateFile`:
+  - Path to the template file to be passed to the `--template-file` argument of the AWS CLI.
+  - Required: true
+
+- `hasIAMCapability`:
+  - Determines whether to pass `CAPABILITY_IAM` as a capability.
+  - Required: false
+  - Default: false
+
+- `hasIAMNamedCapability`:
+  - Determines whether to pass `CAPABILITY_NAMED_IAM` as a capability.
+  - Required: false
+  - Default: false
+
+- `parameterJSON`:
+  - JSON object containing parameter key-value pairs.
+  - Required: false
+  - Default: '{}'
+
+## Examples
+
+Deploying a CloudFormation template using the AWS CloudFormation Deployment GitHub Action with input parameters:
 
 ```yaml
-- name: Configure AWS Credentials
-  uses: aws-actions/configure-aws-credentials@v1.0.3
-  with:
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    aws-region: us-east-1 # Modify this to your desired AWS region
-```
-
-Replace `${{ secrets.AWS_ACCESS_KEY_ID }}` and `${{ secrets.AWS_SECRET_ACCESS_KEY }}` with your actual AWS access key and secret access key stored in GitHub Secrets. Also, modify the AWS region as per your requirement.
-
-## How to Use
-
-To use the "Deploy AWS CloudFormation Stack" GitHub Action in your repository, follow these steps:
-
-1. Create a new file named `.github/workflows/deploy-stack.yml` in the root directory of your repository.
-
-2. Add the following content to `deploy-stack.yml`:
-
-```yaml
-name: Deploy AWS CloudFormation Stack
+name: AWS CloudFormation Deployment
 
 on:
   push:
     branches:
-      - master # Modify this to the branch you want to trigger the action on
+      - main
 
 jobs:
-  deploy-stack:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Deploy AWS CloudFormation template
+        uses: cosq-network/aws-cloudformation-deploy@v1.1.0
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 # Modify this to your desired AWS region
-
-      - name: Deploy AWS CloudFormation Stack
-        uses: cosq-network/aws-cloudformation-deploy@v1.0.10
-        env:
-          stackName: 'your-stack-name'
-          templateFile: 'path/to/your/template-file.yaml'
-          hasIAMCapability: 'true'
-          hasIAMNamedCapability: 'false'
+          stackName: MyCloudFormationStack
+          templateFile: path/to/your/template.yaml
+          hasIAMCapability: true
+          hasIAMNamedCapability: true
+          parameterJSON: '{"Key1": "Value1", "Key2": "Value2"}'
 ```
 
-Replace `your-stack-name` with your desired AWS CloudFormation stack name, and `path/to/your/template-file.yaml` with the path to your AWS CloudFormation template file. Additionally, modify `hasIAMCapability` and `hasIAMNamedCapability` variables based on your stack requirements.
+## License
 
-3. Commit and push the changes to the `master` branch (or the branch you specified in the `on` section of the YAML file).
+This project is licensed under the [MIT License](LICENSE).
 
-4. Whenever you push changes to the specified branch, the action will automatically trigger, and the AWS CloudFormation stack deployment will be initiated.
+## Contributions
 
-## Outputs
+Contributions are welcome! If you find any issues or would like to improve the action, feel free to submit a pull request.
 
-After the successful deployment of the AWS CloudFormation stack, the action will retrieve the stack outputs using the AWS CLI `describe-stacks` command. Each output will be set as an environment variable in the GitHub workflow with the same name as the output key and its value.
+## Support
 
-For example, if your stack has an output with key `OutputKey1` and value `OutputValue1`, the action will set an environment variable `OutputKey1` with the value `OutputValue1`.
-
-## Conclusion
-
-The "Deploy AWS CloudFormation Stack" GitHub Action simplifies the process of deploying AWS CloudFormation stacks by automating the deployment and retrieving the stack outputs. With this action, you can seamlessly integrate AWS CloudFormation deployments into your CI/CD workflows, saving time and reducing manual interventions. Happy automating!
+If you encounter any problems or have questions, please create an issue in the repository.
